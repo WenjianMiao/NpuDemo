@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/hello_world"
+        tools:context=".MainActivity" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btn_sync"
+            android:layout_width="12dp"
+            android:layout_height="56dp"
+            android:layout_margin="12dp"
+            android:layout_weight="1.0"
+            android:background="@drawable/ic_launcher_background"
+            android:gravity="center"
+            android:text="Sync Classify"
+            android:textAllCaps="false"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_async"
+            android:layout_width="20dp"
+            android:layout_height="57dp"
+            android:layout_margin="12dp"
+            android:layout_weight="1.0"
+            android:background="@drawable/ic_launcher_background"
+            android:gravity="center"
+            android:text="Async Classify"
+            android:textAllCaps="false"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
