@@ -39,8 +39,18 @@ public class SyncClassifyActivity extends NpuClassifyActivity {
         }
     }
 
-
-
+    @Override
+    protected void runModel(ModelInfo modelInfo, float[][] inputData) {
+        long start = System.currentTimeMillis();
+        outputData = ModelManager.runModelSync(modelInfo, inputData);
+        long end = System.currentTimeMillis();
+        inferenceTime = end - start;
+        if(outputData == null){
+            Log.e(TAG,"runModelSync fail ,outputData is null");
+            return;
+        }
+        Log.i(TAG, "runModel outputdata length : " + outputData.length + "/inferenceTime = "+inferenceTime);
+    }
 }
 
 
