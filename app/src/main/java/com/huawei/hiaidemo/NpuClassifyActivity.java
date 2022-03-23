@@ -12,13 +12,16 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.huawei.hiaidemo.bean.ModelInfo;
 import com.huawei.hiaidemo.utils.Untils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -44,6 +47,13 @@ public abstract class NpuClassifyActivity extends AppCompatActivity {
     protected float inferenceTime;
 
     protected float[][] outputData;
+
+    protected String[] predictedClass =  new String[3];
+
+    protected Vector<String> word_label =  new Vector<String>();
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -76,7 +86,65 @@ public abstract class NpuClassifyActivity extends AppCompatActivity {
 
 
     protected void preProcess(){
-        //
+        byte[] labels;
+        try {
+            InputStream assetsInputStream = getAssets().open(modelInfo.getOnlineModelLabel());
+            int available = assetsInputStream.available();
+            labels = new byte[available];
+            assetsInputStream.read(labels);
+            assetsInputStream.close();
+            String words = new String(labels);
+            String[] contens = words.split("\n");
+
+            for(String conten:contens){
+                word_label.add(conten);
+            }
+            Log.i(TAG, "initLabel size: " + word_label.size());
+        }catch (Exception e){
+            Log.e(TAG,e.getMessage());
+        }
+    }
+
+    protected void postProcess(float[][] outputData){
+        if(outputData != null){
+            int[] max_index = new int[3];
+            double[] max_num = new double[3];
+
+            Log.i(TAG, "outputData.length : " + outputData.length);
+            for (int i = 0; i < outputData.length; i++) {
+                for (int x = 0; x < outputData[i].length; x++) {
+                    double tmp = outputData[i][x];
+                    //Log.i(TAG, "outputData[" + i + "]: " + outputData[i]);
+                    int tmp_index = x;
+                    for (int j = 0; j < 3; j++) {
+                        if (tmp > max_num[j]) {
+                            tmp_index += max_index[j];
+                            max_index[j] = tmp_index - max_index[j];
+                            tmp_index -= max_index[j];
+                            tmp += max_num[j];
+                            max_num[j] = tmp - max_num[j];
+                            tmp -= max_num[j];
+                        }
+                    }
+                }
+                predictedClass[0] = word_label.get(max_index[0]) + " - " + max_num[0] * 100 +"%\n";
+                predictedClass[1] = word_label.get(max_index[1]) + " - " + max_num[1] * 100 +"%\n"+
+                        word_label.get(max_index[2]) + " - " + max_num[2] * 100 +"%\n";
+                predictedClass[2] ="inference time:" +inferenceTime+ "ms\n";
+                for(String res : predictedClass) {
+                    Log.i(TAG, res);
+                }
+
+                //items.add(new ClassifyItemModel(predictedClass[0], predictedClass[1], predictedClass[2], initClassifiedImg));
+
+            }
+            //adapter.notifyDataSetChanged();
+
+
+        }else {
+            Toast.makeText(NpuClassifyActivity.this,
+                    "run model fail.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

@@ -50,6 +50,8 @@ public class SyncClassifyActivity extends NpuClassifyActivity {
             return;
         }
         Log.i(TAG, "runModel outputdata length : " + outputData.length + "/inferenceTime = "+inferenceTime);
+
+        postProcess(outputData);
     }
 }
 
